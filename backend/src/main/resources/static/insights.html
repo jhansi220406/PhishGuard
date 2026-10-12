@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Insights — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/chart.min.js"></script>
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/history.html">History</a></li>
+          <li><a href="/insights.html" class="active">Insights</a></li>
+          <li><a href="/awareness.html">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <a href="/dashboard.html" class="sidebar-link">
+          <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+          <span>Overview</span>
+        </a>
+        <a href="/url-scanner.html" class="sidebar-link">
+          <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
+          <span>URL Scanner</span>
+        </a>
+        <a href="/qr-scanner.html" class="sidebar-link">
+          <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i>
+          <span>QR Scanner</span>
+        </a>
+        <a href="/history.html" class="sidebar-link">
+          <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+          <span>Scan History</span>
+        </a>
+        <a href="/insights.html" class="sidebar-link active">
+          <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+          <span>Security Insights</span>
+        </a>
+        <a href="/awareness.html" class="sidebar-link">
+          <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+          <span>Awareness Center</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="section-header">
+        <span class="badge badge-purple" style="margin-bottom: 0.5rem;">Threat Intelligence & Telemetry</span>
+        <h1 class="section-title">Security Insights & Threat Trends</h1>
+        <p class="section-subtitle">Aggregated threat patterns, heuristic indicator distribution, and proactive countermeasures.</p>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-2 gap-6" style="margin-bottom: 2.5rem;">
+        <!-- Top Indicators Bar Chart -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+            <h3 style="font-size: 1.15rem; color: var(--text-main);">Most Frequent Threat Indicators</h3>
+            <span class="badge badge-purple">Heuristics</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Distribution of triggered threat rules across all evaluated URLs and QR destinations.
+          </p>
+          <div style="position: relative; height: 280px; width: 100%;">
+            <canvas id="indicatorsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Protocol Breakdown Donut Chart -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+            <h3 style="font-size: 1.15rem; color: var(--text-main);">Transport Encryption (TLS vs HTTP)</h3>
+            <span class="badge badge-cyan">Protocol</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Comparing cleartext HTTP vs encrypted HTTPS amongst submitted threat samples.
+          </p>
+          <div style="position: relative; height: 280px; width: 100%; display: flex; align-items: center; justify-content: center;">
+            <canvas id="protocolChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- In-Depth Indicator Cards -->
+      <div class="card" style="margin-bottom: 2.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem;">Threat Anatomy & Breakdown</h3>
+        <div class="grid grid-3 gap-4">
+          <div style="background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border-left: 3px solid #EF4444;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              <span class="badge badge-high">CRITICAL</span>
+              <strong style="color: var(--text-main); font-size: 0.95rem;">Lookalike Domains</strong>
+            </div>
+            <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+              Attackers register domains visually indistinguishable from brands like Google or PayPal using Unicode homoglyphs (e.g. Cyrillic 'а') or subtle typos.
+            </p>
+          </div>
+
+          <div style="background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border-left: 3px solid #EF4444;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              <span class="badge badge-high">HIGH</span>
+              <strong style="color: var(--text-main); font-size: 0.95rem;">Raw IP Hostnames</strong>
+            </div>
+            <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+              Phishers bypass DNS blacklisting and domain registration records by hosting credential harvester kits on ephemeral raw IPv4 or IPv6 web servers.
+            </p>
+          </div>
+
+          <div style="background: var(--bg-surface-elevated); padding: 1.25rem; border-radius: var(--radius-md); border-left: 3px solid #F59E0B;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              <span class="badge badge-med">MEDIUM</span>
+              <strong style="color: var(--text-main); font-size: 0.95rem;">High-Risk TLDs</strong>
+            </div>
+            <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5;">
+              Free or cheap Top-Level Domains (.tk, .xyz, .top, .ml, .work) account for a disproportionate volume of short-lived disposable phishing attacks.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategic Action Plan -->
+      <div class="card card-elevated" style="background: rgba(17, 26, 46, 0.9);">
+        <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="shield-check" style="color: var(--electric-cyan); width: 22px; height: 22px;"></i>
+          Actionable Defensive Measures for Organizations & End Users
+        </h3>
+        <ul style="list-style-type: disc; margin-left: 1.5rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.7;">
+          <li><strong>Implement FIDO2 / WebAuthn Hardware Keys:</strong> Phishing-resistant MFA stops credential theft even if users mistakenly visit lookalike sites.</li>
+          <li><strong>Treat Physical QR Codes as Untrusted:</strong> Attackers tamper with parking meters, restaurant menus, and payment signs with malicious stickers.</li>
+          <li><strong>Audit DNS with Protective Filtering:</strong> Block resolution of newly registered domains (NRDs &lt; 24h old) to prevent day-zero campaigns.</li>
+          <li><strong>Educate Users on the HTTPS Misconception:</strong> Ensure staff know that a padlock only guarantees encryption with the remote server, not identity honesty.</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    async function loadInsights() {
+      try {
+        const activity = await PhishGuardApi.dashboard.getActivity();
+        renderInsightsCharts(activity);
+      } catch (e) {
+        console.error('Insights load error:', e);
+      } finally {
+        PhishGuardUI.initIcons();
+      }
+    }
+
+    function renderInsightsCharts(activity) {
+      // 1. Indicators Bar Chart
+      const indCtx = document.getElementById('indicatorsChart').getContext('2d');
+      const indicators = activity.topIndicators || [
+        { code: 'LOOKALIKE_DOMAIN', count: 14 },
+        { code: 'SUSPICIOUS_TLD', count: 11 },
+        { code: 'IP_HOSTNAME', count: 8 },
+        { code: 'INSECURE_HTTP', count: 18 },
+        { code: 'EXCESSIVE_SUBDOMAINS', count: 6 },
+        { code: 'AT_SYMBOL_TRICK', count: 4 }
+      ];
+
+      new Chart(indCtx, {
+        type: 'bar',
+        data: {
+          labels: indicators.map(i => i.code.replace(/_/g, ' ')),
+          datasets: [{
+            label: 'Triggered Occurrences',
+            data: indicators.map(i => i.count),
+            backgroundColor: 'rgba(139, 92, 246, 0.75)',
+            borderColor: '#8B5CF6',
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94A3B8' } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#F8FAFC', font: { size: 11 } } }
+          }
+        }
+      });
+
+      // 2. Protocol Donut Chart
+      const protoCtx = document.getElementById('protocolChart').getContext('2d');
+      new Chart(protoCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['HTTPS (TLS Encrypted)', 'HTTP (Cleartext)'],
+          datasets: [{
+            data: [26, 12],
+            backgroundColor: ['#22D3EE', '#EF4444'],
+            borderColor: '#111A2E',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94A3B8' } }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadInsights();
+    });
+  </script>
+</body>
+</html>

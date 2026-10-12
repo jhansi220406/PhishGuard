@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Threat Analyzer — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html" class="active">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/history.html">History</a></li>
+          <li><a href="/awareness.html">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+    <!-- Section Header -->
+    <div class="section-header">
+      <span class="badge badge-purple" style="margin-bottom: 0.5rem;">Heuristic Analysis Engine</span>
+      <h1 class="section-title">URL Threat Analyzer</h1>
+      <p class="section-subtitle">Dissect suspicious links through deterministic heuristic inspection, lookalike detection, and protocol validation.</p>
+    </div>
+
+    <!-- Scanner Box -->
+    <div class="scanner-box" style="margin-bottom: 2rem;">
+      <form id="url-scan-form" onsubmit="executeUrlScan(event)">
+        <div class="url-input-container">
+          <i data-lucide="link" style="color: var(--text-dim); width: 22px; height: 22px;"></i>
+          <input 
+            type="text" 
+            id="url-input" 
+            placeholder="Enter or paste full target URL (e.g. https://example.com/login)..." 
+            autocomplete="off"
+            spellcheck="false"
+            required
+          >
+          <button type="button" class="btn btn-ghost btn-sm" onclick="clearInput()" title="Clear">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+          </button>
+          <button type="submit" id="scan-submit-btn" class="btn btn-primary">
+            <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+            Analyze URL
+          </button>
+        </div>
+      </form>
+
+      <!-- Example Guidance Badges -->
+      <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">TEST EXAMPLES:</span>
+        <button class="btn btn-ghost btn-sm" style="font-size: 0.775rem; padding: 0.2rem 0.6rem;" onclick="setExample('https://google.com')">
+          Official Domain (Low Risk)
+        </button>
+        <button class="btn btn-ghost btn-sm" style="font-size: 0.775rem; padding: 0.2rem 0.6rem;" onclick="setExample('http://192.168.0.12/webscr/login.php')">
+          Raw IP Hostname (High Risk)
+        </button>
+        <button class="btn btn-ghost btn-sm" style="font-size: 0.775rem; padding: 0.2rem 0.6rem;" onclick="setExample('http://paypa1-security.account-update.tk/verify')">
+          Lookalike + Bad TLD (High Risk)
+        </button>
+        <button class="btn btn-ghost btn-sm" style="font-size: 0.775rem; padding: 0.2rem 0.6rem;" onclick="setExample('https://portal.myuniversity.edu/login?redirect=dashboard')">
+          Legitimate Subdomain (Low Risk)
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton Card -->
+    <div id="scan-loading" class="card" style="display: none; padding: 3rem 2rem; text-align: center;">
+      <div class="spinner" style="width: 48px; height: 48px; border-width: 4px; margin-bottom: 1.25rem;"></div>
+      <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Analyzing URL Structure & Reputation...</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 460px; margin: 0 auto;">
+        Inspecting IPv4 patterns, lookalike characters, brand impersonations, credential traps, and external threat registries.
+      </p>
+    </div>
+
+    <!-- Scan Results Card -->
+    <div id="scan-result" style="display: none;">
+      <div class="card card-elevated" style="margin-bottom: 2rem;">
+        <!-- Top Banner -->
+        <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="flex items-center gap-2" style="margin-bottom: 0.25rem;">
+              <span id="res-risk-badge"></span>
+              <span id="res-timestamp" style="font-size: 0.8rem; color: var(--text-dim);"></span>
+            </div>
+            <h2 id="res-target-host" style="font-size: 1.4rem; font-family: monospace; color: var(--text-main); word-break: break-all;"></h2>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button class="btn btn-secondary btn-sm" onclick="copyResultUrl()">
+              <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+              Copy Link
+            </button>
+            <div id="auth-save-badge"></div>
+          </div>
+        </div>
+
+        <!-- Metric Overview Grid -->
+        <div class="grid grid-4 gap-4" style="margin-bottom: 2rem;">
+          <!-- Score Gauge Card -->
+          <div class="card" style="display: flex; align-items: center; justify-content: center; padding: 1.25rem; background: #0E1527;">
+            <div id="res-score-circle" class="score-circle">
+              <span id="res-score-num" class="score-val">0</span>
+              <span class="score-label">RISK SCORE</span>
+            </div>
+          </div>
+
+          <!-- Metadata 1 -->
+          <div class="card" style="padding: 1.25rem; background: #0E1527;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">PROTOCOL SECURITY</span>
+            <div id="res-protocol" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; color: var(--text-main);"></div>
+            <p id="res-protocol-desc" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;"></p>
+          </div>
+
+          <!-- Metadata 2 -->
+          <div class="card" style="padding: 1.25rem; background: #0E1527;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">PAYLOAD STRUCTURE</span>
+            <div id="res-length" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; color: var(--text-main);"></div>
+            <p id="res-subdomains" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;"></p>
+          </div>
+
+          <!-- Metadata 3 -->
+          <div class="card" style="padding: 1.25rem; background: #0E1527;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">THREAT INTELLIGENCE</span>
+            <div id="res-threat-provider" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; color: var(--electric-cyan);"></div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Live reputation registry check</p>
+          </div>
+        </div>
+
+        <!-- Full URL details -->
+        <div style="background: #090E1B; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 2rem;">
+          <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">RAW ANALYZED URL</span>
+          <p id="res-raw-url" style="font-family: monospace; font-size: 0.9rem; color: var(--electric-cyan); word-break: break-all; margin-top: 0.35rem;"></p>
+        </div>
+
+        <!-- Findings List -->
+        <div style="margin-bottom: 2rem;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 1rem; display: flex; items-center; gap: 0.5rem;">
+            <i data-lucide="alert-triangle" style="color: var(--primary-purple); width: 20px; height: 20px;"></i>
+            Heuristic Risk Indicators (<span id="findings-count">0</span>)
+          </h3>
+          <div id="findings-list"></div>
+        </div>
+
+        <!-- Recommended Actions Card -->
+        <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: var(--radius-lg); padding: 1.5rem;">
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="shield-alert" style="color: var(--primary-purple); width: 20px; height: 20px;"></i>
+            Recommended Cybersecurity Remediation
+          </h4>
+          <ul id="recommendations-list" style="list-style-type: disc; margin-left: 1.5rem; font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    let currentScanData = null;
+
+    function setExample(url) {
+      document.getElementById('url-input').value = url;
+      executeUrlScan();
+    }
+
+    function clearInput() {
+      document.getElementById('url-input').value = '';
+      document.getElementById('url-input').focus();
+    }
+
+    function copyResultUrl() {
+      if (currentScanData && currentScanData.submittedContent) {
+        PhishGuardUI.copyToClipboard(currentScanData.submittedContent, 'URL copied to clipboard!');
+      }
+    }
+
+    async function executeUrlScan(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('url-input');
+      const submitBtn = document.getElementById('scan-submit-btn');
+      const loadingDiv = document.getElementById('scan-loading');
+      const resultDiv = document.getElementById('scan-result');
+
+      const rawUrl = input.value.trim();
+      if (!rawUrl) {
+        PhishGuardUI.showToast('Please enter a URL to inspect', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      loadingDiv.style.display = 'block';
+      resultDiv.style.display = 'none';
+
+      try {
+        const scan = await PhishGuardApi.scans.analyzeUrl(rawUrl);
+        currentScanData = scan;
+        renderScanReport(scan);
+        resultDiv.style.display = 'block';
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Analysis failed. Please verify the URL.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        loadingDiv.style.display = 'none';
+        PhishGuardUI.initIcons();
+      }
+    }
+
+    function renderScanReport(scan) {
+      // Risk badge and timestamp
+      document.getElementById('res-risk-badge').innerHTML = PhishGuardUI.renderRiskBadge(scan.riskLevel);
+      document.getElementById('res-timestamp').textContent = 'Scanned: ' + PhishGuardUI.formatDate(scan.scannedAt);
+      document.getElementById('res-target-host').textContent = scan.destinationHostname || 'Unknown Host';
+      document.getElementById('res-raw-url').textContent = scan.submittedContent;
+
+      // Score circle
+      const scoreCircle = document.getElementById('res-score-circle');
+      scoreCircle.className = 'score-circle';
+      if (scan.riskLevel === 'HIGH') {
+        scoreCircle.classList.add('score-high');
+      } else if (scan.riskLevel === 'MEDIUM') {
+        scoreCircle.classList.add('score-med');
+      } else {
+        scoreCircle.classList.add('score-low');
+      }
+      document.getElementById('res-score-num').textContent = scan.riskScore;
+
+      // Protocol & TLS context
+      const isHttps = (scan.submittedContent || '').toLowerCase().startsWith('https://');
+      const protocolEl = document.getElementById('res-protocol');
+      const protocolDesc = document.getElementById('res-protocol-desc');
+      if (isHttps) {
+        protocolEl.innerHTML = `<span style="color: var(--risk-low);">HTTPS (Encrypted)</span>`;
+        protocolDesc.textContent = 'TLS transport layer active. (Note: Phishing sites can also deploy HTTPS certificates)';
+      } else {
+        protocolEl.innerHTML = `<span style="color: var(--risk-high);">HTTP (Cleartext)</span>`;
+        protocolDesc.textContent = 'Insecure protocol. Transmission is vulnerable to MITM interception.';
+      }
+
+      // Structure metadata
+      document.getElementById('res-length').textContent = `${(scan.submittedContent || '').length} Characters`;
+      document.getElementById('res-subdomains').textContent = `Host: ${scan.destinationHostname || 'N/A'}`;
+
+      // Threat provider status
+      document.getElementById('res-threat-provider').textContent = scan.threatProviderStatus || 'Reputation unavailable';
+
+      // Findings list
+      const findingsList = document.getElementById('findings-list');
+      const countEl = document.getElementById('findings-count');
+      const findings = scan.findings || [];
+      countEl.textContent = findings.length;
+
+      if (findings.length === 0) {
+        findingsList.innerHTML = `
+          <div class="finding-item" style="border-left: 3px solid var(--risk-low);">
+            <i data-lucide="check-circle" style="color: var(--risk-low); width: 22px; height: 22px; margin-top: 2px;"></i>
+            <div>
+              <h4 style="font-size: 0.95rem; color: var(--risk-low); margin-bottom: 0.25rem;">No Heuristic Threat Indicators Triggered</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+                The hostname syntax, brand representation, and payload parameters adhered to normal legitimate conventions.
+              </p>
+            </div>
+          </div>
+        `;
+      } else {
+        findingsList.innerHTML = findings.map(f => {
+          let sevColor = 'var(--risk-med)';
+          let sevClass = 'badge-med';
+          if (f.severity === 'CRITICAL' || f.severity === 'HIGH') {
+            sevColor = 'var(--risk-high)';
+            sevClass = 'badge-high';
+          } else if (f.severity === 'LOW' || f.severity === 'INFO') {
+            sevColor = 'var(--electric-cyan)';
+            sevClass = 'badge-cyan';
+          }
+
+          return `
+            <div class="finding-item" style="border-left: 3px solid ${sevColor};">
+              <div class="finding-icon">
+                <i data-lucide="alert-circle" style="color: ${sevColor}; width: 22px; height: 22px;"></i>
+              </div>
+              <div style="flex: 1;">
+                <div class="flex justify-between items-center" style="margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.5rem;">
+                  <h4 style="font-size: 0.95rem; color: var(--text-main);">${PhishGuardUI.sanitize(f.title)}</h4>
+                  <div class="flex items-center gap-2">
+                    <span class="badge ${sevClass}">${f.severity}</span>
+                    <span style="font-size: 0.75rem; color: var(--text-dim); font-family: monospace;">${PhishGuardUI.sanitize(f.indicatorCode)}</span>
+                  </div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+                  ${PhishGuardUI.sanitize(f.description)}
+                </p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Recommendations list
+      const recList = document.getElementById('recommendations-list');
+      const recs = scan.recommendations || [];
+      if (recs.length === 0) {
+        recList.innerHTML = `<li>Always ensure destination certificates match expected organizations before authentication.</li>`;
+      } else {
+        recList.innerHTML = recs.map(r => `<li>${PhishGuardUI.sanitize(r)}</li>`).join('');
+      }
+
+      // Auth save notification
+      const authBadge = document.getElementById('auth-save-badge');
+      if (PhishGuardApi.isAuthenticated()) {
+        authBadge.innerHTML = `<span class="badge badge-low"><i data-lucide="check"></i> Saved to Account History</span>`;
+      } else {
+        authBadge.innerHTML = `<span class="badge badge-unknown" title="Sign in to save scans"><i data-lucide="info"></i> Anonymous Scan</span>`;
+      }
+
+      PhishGuardUI.initIcons();
+    }
+
+    // Check URL query parameters for direct scan trigger (e.g. from landing page)
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlQuery = params.get('url');
+      if (urlQuery) {
+        document.getElementById('url-input').value = decodeURIComponent(urlQuery);
+        executeUrlScan();
+      }
+    });
+  </script>
+</body>
+</html>

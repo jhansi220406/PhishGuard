@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing Awareness Center & Quiz — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/history.html">History</a></li>
+          <li><a href="/insights.html">Insights</a></li>
+          <li><a href="/awareness.html" class="active">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <a href="/dashboard.html" class="sidebar-link">
+          <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+          <span>Overview</span>
+        </a>
+        <a href="/url-scanner.html" class="sidebar-link">
+          <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
+          <span>URL Scanner</span>
+        </a>
+        <a href="/qr-scanner.html" class="sidebar-link">
+          <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i>
+          <span>QR Scanner</span>
+        </a>
+        <a href="/history.html" class="sidebar-link">
+          <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+          <span>Scan History</span>
+        </a>
+        <a href="/insights.html" class="sidebar-link">
+          <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+          <span>Security Insights</span>
+        </a>
+        <a href="/awareness.html" class="sidebar-link active">
+          <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+          <span>Awareness Center</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="section-header">
+        <span class="badge badge-purple" style="margin-bottom: 0.5rem;">Cyber Defense Training</span>
+        <h1 class="section-title">Phishing Awareness & Training</h1>
+        <p class="section-subtitle">Learn the anatomy of social engineering attacks, QRishing, and test your instincts in the interactive scenario quiz.</p>
+      </div>
+
+      <!-- Quick Section Anchor Tabs -->
+      <div class="flex gap-3" style="margin-bottom: 2rem;">
+        <a href="#articles-section" class="btn btn-secondary btn-sm">
+          <i data-lucide="book-open" style="width: 15px; height: 15px;"></i>
+          Read Security Articles
+        </a>
+        <a href="#quiz-section" class="btn btn-primary btn-sm">
+          <i data-lucide="award" style="width: 15px; height: 15px;"></i>
+          Take Security Quiz
+        </a>
+      </div>
+
+      <!-- Articles Section -->
+      <section id="articles-section" style="margin-bottom: 3.5rem;">
+        <h2 style="font-size: 1.4rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="file-text" style="color: var(--electric-cyan); width: 22px; height: 22px;"></i>
+          Educational Cybersecurity Articles
+        </h2>
+
+        <div class="grid grid-2 gap-6" id="articles-grid">
+          <!-- Article 1: QRishing -->
+          <div class="card">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
+              <span class="badge badge-purple">NEW THREAT VECTOR</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">4 min read</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              QRishing: The Dark Side of Quick Response Codes
+            </h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+              QR code phishing ("Quishing") exploits physical curiosity. Attackers paste counterfeit sticker codes over parking meters, restaurant ordering hubs, and payment terminals. Because humans cannot visually read the 2D matrix, they scan blindly, landing on phishing credential harvesters or malware downloaders.
+            </p>
+            <div style="background: rgba(34, 211, 238, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--electric-cyan);">
+              <strong>Key Defense:</strong> Never scan unverified public stickers. Check destination hostnames on scanner previews before interacting.
+            </div>
+          </div>
+
+          <!-- Article 2: The HTTPS Fallacy -->
+          <div class="card">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
+              <span class="badge badge-cyan">COMMON MISCONCEPTION</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">3 min read</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              The HTTPS Fallacy: The Green Padlock is Not a Shield
+            </h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+              Many users falsely believe that seeing <code>https://</code> or a browser padlock means a website is safe. In reality, HTTPS only guarantees that the connection between you and the server is encrypted against Wi-Fi eavesdroppers. Today, over 80% of phishing kits obtain free TLS certificates (e.g. Let's Encrypt). The connection is secure, but the destination is fraudulent!
+            </p>
+            <div style="background: rgba(239, 68, 68, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: #FCA5A5;">
+              <strong>Key Defense:</strong> Verify the actual hostname domain against official bank or portal bookmarks, not just the padlock.
+            </div>
+          </div>
+
+          <!-- Article 3: Lookalike Domains & Homoglyphs -->
+          <div class="card">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
+              <span class="badge badge-med">DECEPTION TACTIC</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">5 min read</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              Typosquatting & Unicode Homoglyph Impersonation
+            </h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+              Attackers register domains with subtle misspellings (e.g., <code>microsof-security.com</code>) or exploit internationalized domain names (IDN) by substituting Latin letters with visually identical Cyrillic or Greek characters (e.g. Latin 'a' vs Cyrillic 'а', rendered as Punycode <code>xn--...</code>). To the naked eye in an address bar, they look identical.
+            </p>
+            <div style="background: rgba(245, 158, 11, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: #FCD34D;">
+              <strong>Key Defense:</strong> Use password managers that bind credentials strictly to exact origin domains; they never auto-fill on lookalikes.
+            </div>
+          </div>
+
+          <!-- Article 4: Urgency & Credential Harvesters -->
+          <div class="card">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
+              <span class="badge badge-purple">SOCIAL ENGINEERING</span>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">3 min read</span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              Artificial Urgency: The Psychological Trap
+            </h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
+              Phishing messages invariably simulate extreme crisis or FOMO: "Account Suspended in 24 Hours", "Unauthorized Wire Transfer Detected", or "Immediate HR Benefit Update". Attackers engineer high adrenaline states to impair critical cognitive evaluation, causing victims to bypass scrutiny and click.
+            </p>
+            <div style="background: rgba(139, 92, 246, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: #D8B4FE;">
+              <strong>Key Defense:</strong> Pause immediately whenever a message creates urgency. Contact the organization via official, out-of-band channels.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Quiz Section -->
+      <section id="quiz-section" class="card card-elevated" style="padding: 2.5rem 2rem;">
+        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge badge-cyan" style="margin-bottom: 0.5rem;">Interactive Scenario Evaluation</span>
+            <h2 style="font-size: 1.6rem; color: var(--text-main);">Phishing Detection Challenge</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              Test your ability to spot real-world phishing indicators across links, emails, and QR scenarios.
+            </p>
+          </div>
+          <div id="quiz-badge-container"></div>
+        </div>
+
+        <!-- Quiz Container Form -->
+        <form id="quiz-form" onsubmit="submitQuiz(event)">
+          <div id="quiz-questions-container" style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Questions injected via JS -->
+            <div style="text-align: center; padding: 2rem;"><span class="spinner"></span> Loading questions...</div>
+          </div>
+
+          <div style="margin-top: 2.5rem; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="font-size: 0.85rem; color: var(--text-dim);">
+              Answer all questions before submitting to receive detailed rationales.
+            </div>
+            <button type="submit" id="quiz-submit-btn" class="btn btn-primary btn-lg">
+              <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+              Submit Answers & Evaluate
+            </button>
+          </div>
+        </form>
+
+        <!-- Quiz Results & Explanations Card -->
+        <div id="quiz-results-card" style="display: none; margin-top: 2.5rem; border-top: 2px solid var(--primary-purple); padding-top: 2rem;">
+          <div class="card" style="background: #0B1020; margin-bottom: 2rem; padding: 2rem; text-align: center;">
+            <div id="quiz-score-circle" class="score-circle score-low" style="margin: 0 auto 1.25rem auto;">
+              <span id="quiz-score-val" class="score-val">0%</span>
+              <span class="score-label">ACCURACY</span>
+            </div>
+            <h3 id="quiz-verdict-title" style="font-size: 1.4rem; margin-bottom: 0.5rem;"></h3>
+            <p id="quiz-verdict-desc" style="font-size: 0.95rem; color: var(--text-muted); max-width: 500px; margin: 0 auto;"></p>
+          </div>
+
+          <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem;">Question-by-Question Review & Explanations</h3>
+          <div id="quiz-explanations-list" style="display: flex; flex-direction: column; gap: 1.25rem;"></div>
+
+          <div style="margin-top: 2rem; text-align: center;">
+            <button class="btn btn-secondary" onclick="resetQuiz()">
+              <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+              Retake Challenge
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    let questionsData = [];
+
+    async function loadQuizQuestions() {
+      const container = document.getElementById('quiz-questions-container');
+      try {
+        const quizzes = await PhishGuardApi.awareness.getQuizzes();
+        questionsData = quizzes && quizzes[0] && quizzes[0].questions ? quizzes[0].questions : getDefaultQuestions();
+        renderQuestions(questionsData);
+      } catch (err) {
+        console.warn('Using client fallback questions:', err);
+        questionsData = getDefaultQuestions();
+        renderQuestions(questionsData);
+      } finally {
+        PhishGuardUI.initIcons();
+      }
+    }
+
+    function getDefaultQuestions() {
+      return [
+        {
+          id: 1,
+          scenario: "You receive an SMS alert saying: 'Your bank card is restricted. Re-authenticate immediately at http://192.168.1.55/chase-auth to prevent account closure.'",
+          question: "Which red flag is the most critical technical indicator that this message is fraudulent?",
+          options: [
+            "The message was sent via SMS instead of email.",
+            "The destination URL uses a raw IP address instead of the official bank domain.",
+            "The message has urgent wording.",
+            "The link lacks a query parameter."
+          ],
+          correctIndex: 1,
+          explanation: "Legitimate financial institutions NEVER host login portals on raw, unmapped IP addresses (like 192.168.x.x). IP hostnames bypass standard DNS records and are characteristic of short-lived attacker infrastructure."
+        },
+        {
+          id: 2,
+          scenario: "A QR code sticker is placed on a city parking meter. When scanned, your phone reveals the destination: 'https://pay-parking-city.com.checkout-sys.tk/pay'",
+          question: "Why should you NOT proceed to enter your credit card on this destination?",
+          options: [
+            "It is impossible for parking meters to use QR codes.",
+            "The website uses HTTPS, which proves it is safe.",
+            "The actual registered hostname is 'checkout-sys.tk', with a high-risk TLD (.tk) and deceptive subdomains.",
+            "The QR code took more than 2 seconds to scan."
+          ],
+          correctIndex: 2,
+          explanation: "In a URL, the true host is the part directly before the final domain suffix. 'checkout-sys.tk' is the real domain, whereas 'pay-parking-city.com' is merely a deceptive subdomain designed to trick visual inspection."
+        },
+        {
+          id: 3,
+          scenario: "You receive an email from 'IT Support' asking you to update your campus password at 'https://login.unıversity.edu/portal' (notice the dotless 'ı' in university).",
+          question: "What specific attack vector is being employed here?",
+          options: [
+            "DDoS attack",
+            "Homoglyph / Punycode lookalike domain impersonation",
+            "SQL Injection",
+            "Cross-Site Scripting (XSS)"
+          ],
+          correctIndex: 1,
+          explanation: "This is an IDN Homoglyph attack. Attackers substitute Latin 'i' with Turkish dotless 'ı'. When resolved by DNS, it targets an entirely different server while looking virtually identical to the naked eye."
+        },
+        {
+          id: 4,
+          scenario: "An email contains a link formatted as 'https://paypal.com@login-verification-trap.com/security'.",
+          question: "Where will your browser actually navigate if you click this link?",
+          options: [
+            "To paypal.com",
+            "To login-verification-trap.com",
+            "The browser will refuse to open any link with an @ symbol",
+            "To a split-screen session"
+          ],
+          correctIndex: 1,
+          explanation: "In URL standard RFC 3986, characters before the '@' symbol are treated as basic HTTP user-info credentials. The browser connects strictly to 'login-verification-trap.com'."
+        }
+      ];
+    }
+
+    function renderQuestions(questions) {
+      const container = document.getElementById('quiz-questions-container');
+      container.innerHTML = questions.map((q, idx) => `
+        <div class="card" style="background: #0E1527; padding: 1.5rem; border: 1px solid var(--border-subtle);">
+          <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
+            <span class="badge badge-purple">Scenario ${idx + 1}</span>
+          </div>
+          <div style="font-size: 0.95rem; color: var(--electric-cyan); background: #070B16; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 1rem; font-family: monospace;">
+            ${PhishGuardUI.sanitize(q.scenario)}
+          </div>
+          <h4 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--text-main);">
+            ${PhishGuardUI.sanitize(q.question)}
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            ${q.options.map((opt, oIdx) => `
+              <label class="flex items-center gap-3" style="cursor: pointer; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); transition: all 0.2s ease;">
+                <input type="radio" name="question_${q.id}" value="${oIdx}" required style="accent-color: var(--primary-purple); width: 16px; height: 16px;">
+                <span style="font-size: 0.9rem; color: var(--text-muted);">${PhishGuardUI.sanitize(opt)}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function submitQuiz(e) {
+      e.preventDefault();
+      const form = document.getElementById('quiz-form');
+      const submitBtn = document.getElementById('quiz-submit-btn');
+
+      let correctCount = 0;
+      const userAnswers = [];
+
+      questionsData.forEach(q => {
+        const selected = form.querySelector(`input[name="question_${q.id}"]:checked`);
+        const chosen = selected ? parseInt(selected.value, 10) : -1;
+        const isCorrect = chosen === q.correctIndex;
+        if (isCorrect) correctCount++;
+        userAnswers.push({
+          questionId: q.id,
+          chosenIndex: chosen,
+          isCorrect
+        });
+      });
+
+      const total = questionsData.length;
+      const scorePct = Math.round((correctCount / total) * 100);
+
+      // Try sending result to backend
+      try {
+        await PhishGuardApi.awareness.submitQuiz(1, userAnswers);
+      } catch (err) {
+        console.warn('Backend result recording skipped:', err);
+      }
+
+      displayQuizResults(correctCount, total, scorePct, userAnswers);
+    }
+
+    function displayQuizResults(correct, total, scorePct, userAnswers) {
+      const resultsCard = document.getElementById('quiz-results-card');
+      const circle = document.getElementById('quiz-score-circle');
+      const valEl = document.getElementById('quiz-score-val');
+      const titleEl = document.getElementById('quiz-verdict-title');
+      const descEl = document.getElementById('quiz-verdict-desc');
+      const explList = document.getElementById('quiz-explanations-list');
+
+      resultsCard.style.display = 'block';
+      valEl.textContent = `${scorePct}%`;
+
+      circle.className = 'score-circle';
+      if (scorePct >= 80) {
+        circle.classList.add('score-low');
+        titleEl.textContent = 'Cyber Threat Specialist Level!';
+        titleEl.style.color = 'var(--risk-low)';
+        descEl.textContent = `Outstanding! You identified ${correct} out of ${total} phishing scenarios accurately. Your instincts are sharp.`;
+      } else if (scorePct >= 50) {
+        circle.classList.add('score-med');
+        titleEl.textContent = 'Intermediate Awareness';
+        titleEl.style.color = 'var(--risk-med)';
+        descEl.textContent = `Good effort! You answered ${correct} of ${total} correctly. Review the homoglyph and QR guidelines below to sharpen your defense.`;
+      } else {
+        circle.classList.add('score-high');
+        titleEl.textContent = 'Vulnerable to Social Engineering';
+        titleEl.style.color = 'var(--risk-high)';
+        descEl.textContent = `You scored ${correct} of ${total}. Review the detailed explanations below to avoid falling for real-world phishing attacks.`;
+      }
+
+      explList.innerHTML = questionsData.map((q, idx) => {
+        const uAns = userAnswers.find(a => a.questionId === q.id);
+        const passed = uAns && uAns.isCorrect;
+
+        return `
+          <div class="card" style="border-left: 4px solid ${passed ? 'var(--risk-low)' : 'var(--risk-high)'}; background: #0E1527;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              <span class="badge ${passed ? 'badge-low' : 'badge-high'}">${passed ? 'CORRECT' : 'INCORRECT'}</span>
+              <strong style="font-size: 0.95rem; color: var(--text-main);">Question ${idx + 1}</strong>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.75rem;">${PhishGuardUI.sanitize(q.question)}</p>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+              <strong>Correct Answer:</strong> <span style="color: var(--risk-low);">${PhishGuardUI.sanitize(q.options[q.correctIndex])}</span>
+            </div>
+            <div style="background: rgba(139, 92, 246, 0.08); border-radius: var(--radius-sm); padding: 0.75rem; font-size: 0.825rem; color: var(--text-main); line-height: 1.5;">
+              <strong>Technical Explanation:</strong> ${PhishGuardUI.sanitize(q.explanation)}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      PhishGuardUI.initIcons();
+      PhishGuardUI.showToast(`Quiz Completed! Score: ${scorePct}%`, scorePct >= 75 ? 'success' : 'info');
+    }
+
+    function resetQuiz() {
+      document.getElementById('quiz-form').reset();
+      document.getElementById('quiz-results-card').style.display = 'none';
+      document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadQuizQuestions();
+    });
+  </script>
+</body>
+</html>

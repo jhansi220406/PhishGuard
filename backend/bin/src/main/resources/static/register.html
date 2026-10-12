@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body style="justify-content: center; align-items: center; padding: 2rem 1rem;">
+  <div class="bg-mesh"></div>
+
+  <div style="width: 100%; max-width: 460px;">
+    <!-- Logo Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <a href="/" class="brand-logo" style="justify-content: center; font-size: 1.75rem; margin-bottom: 0.5rem;">
+        <i data-lucide="shield" style="width: 32px; height: 32px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Join the phishing defense network</p>
+    </div>
+
+    <!-- Register Card -->
+    <div class="card card-elevated" style="padding: 2.25rem;">
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input 
+            type="text" 
+            id="reg-name" 
+            class="form-input" 
+            placeholder="Alex Vance" 
+            required
+            autocomplete="name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input 
+            type="email" 
+            id="reg-email" 
+            class="form-input" 
+            placeholder="alex@security-lab.edu" 
+            required
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password</label>
+          <input 
+            type="password" 
+            id="reg-password" 
+            class="form-input" 
+            placeholder="Minimum 8 characters" 
+            required
+            minlength="8"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">Confirm Password</label>
+          <input 
+            type="password" 
+            id="reg-confirm" 
+            class="form-input" 
+            placeholder="Repeat password" 
+            required
+            minlength="8"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <button type="submit" id="reg-submit-btn" class="btn btn-primary w-full" style="padding: 0.8rem; margin-top: 0.5rem;">
+          <i data-lucide="user-plus" style="width: 18px; height: 18px;"></i>
+          Create Analyst Account
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+        Already have an account? 
+        <a href="/login.html" style="color: var(--electric-cyan); font-weight: 600;">Sign in here</a>
+      </div>
+    </div>
+
+    <!-- Back to Home -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+      <a href="/" style="font-size: 0.85rem; color: var(--text-dim); display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Back to PhishGuard Home
+      </a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    async function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const pass = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+      const btn = document.getElementById('reg-submit-btn');
+
+      if (pass !== confirm) {
+        PhishGuardUI.showToast('Passwords do not match', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner" style="width: 16px; height: 16px;"></span> Creating Account...`;
+
+      try {
+        await PhishGuardApi.auth.register(name, email, pass);
+        PhishGuardUI.showToast('Account registered successfully!', 'success');
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 600);
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Registration failed', 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="user-plus" style="width: 18px; height: 18px;"></i> Create Analyst Account`;
+        PhishGuardUI.initIcons();
+      }
+    }
+  </script>
+</body>
+</html>

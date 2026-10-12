@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Dashboard — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js & Lucide -->
+  <script src="/js/chart.min.js"></script>
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/dashboard.html" class="active">Dashboard</a></li>
+          <li><a href="/history.html">History</a></li>
+          <li><a href="/insights.html">Insights</a></li>
+          <li><a href="/awareness.html">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- App Layout with Sidebar -->
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <a href="/dashboard.html" class="sidebar-link active">
+          <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+          <span>Overview</span>
+        </a>
+        <a href="/url-scanner.html" class="sidebar-link">
+          <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
+          <span>URL Scanner</span>
+        </a>
+        <a href="/qr-scanner.html" class="sidebar-link">
+          <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i>
+          <span>QR Scanner</span>
+        </a>
+        <a href="/history.html" class="sidebar-link">
+          <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+          <span>Scan History</span>
+        </a>
+        <a href="/insights.html" class="sidebar-link">
+          <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+          <span>Security Insights</span>
+        </a>
+        <a href="/awareness.html" class="sidebar-link">
+          <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+          <span>Awareness Center</span>
+        </a>
+      </div>
+
+      <!-- Quick Action Shortcuts in Sidebar -->
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.25rem;">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem;">
+          Quick Scanners
+        </div>
+        <div class="flex flex-col gap-2">
+          <a href="/url-scanner.html" class="btn btn-primary btn-sm w-full">
+            <i data-lucide="search" style="width: 14px; height: 14px;"></i>
+            Scan Link
+          </a>
+          <a href="/qr-scanner.html" class="btn btn-secondary btn-sm w-full">
+            <i data-lucide="camera" style="width: 14px; height: 14px;"></i>
+            Scan QR
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Section Header -->
+      <div class="flex justify-between items-center" style="margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 class="section-title">Security Overview</h1>
+          <p class="section-subtitle">Monitor your scans and review potential security risks across your environment.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="demo-indicator" class="badge badge-purple" style="display: none;">Demo Mode Active</span>
+          <button class="btn btn-ghost btn-sm" onclick="loadDashboardData()">
+            <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Stat Metric Cards -->
+      <div class="grid grid-4 gap-4" style="margin-bottom: 2rem;">
+        <!-- Card 1: Total Scans -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Total Scans</span>
+            <div style="color: var(--primary-purple); background: rgba(139, 92, 246, 0.1); padding: 6px; border-radius: 8px;">
+              <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+            </div>
+          </div>
+          <div id="stat-total-scans" style="font-size: 2rem; font-weight: 800; color: var(--text-main);">0</div>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Aggregated URL & QR analyses</span>
+        </div>
+
+        <!-- Card 2: URLs Analyzed -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">URLs Analyzed</span>
+            <div style="color: var(--electric-cyan); background: rgba(34, 211, 238, 0.1); padding: 6px; border-radius: 8px;">
+              <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
+            </div>
+          </div>
+          <div id="stat-urls-analyzed" style="font-size: 2rem; font-weight: 800; color: var(--text-main);">0</div>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Direct link inspections</span>
+        </div>
+
+        <!-- Card 3: QR Codes Scanned -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">QR Codes Scanned</span>
+            <div style="color: var(--risk-low); background: rgba(16, 185, 129, 0.1); padding: 6px; border-radius: 8px;">
+              <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i>
+            </div>
+          </div>
+          <div id="stat-qr-scanned" style="font-size: 2rem; font-weight: 800; color: var(--text-main);">0</div>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">Camera & image decodings</span>
+        </div>
+
+        <!-- Card 4: Potential Threats -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Threats Detected</span>
+            <div style="color: var(--risk-high); background: rgba(239, 68, 68, 0.1); padding: 6px; border-radius: 8px;">
+              <i data-lucide="alert-octagon" style="width: 18px; height: 18px;"></i>
+            </div>
+          </div>
+          <div id="stat-threats-detected" style="font-size: 2rem; font-weight: 800; color: var(--risk-high);">0</div>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">High & Medium risk verdicts</span>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-2 gap-6" style="margin-bottom: 2.5rem;">
+        <!-- Chart 1: Scan Activity Timeline -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Scan Activity (Recent 7 Days)</h3>
+            <span class="badge badge-purple">Daily Volume</span>
+          </div>
+          <div style="position: relative; height: 260px; width: 100%;">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Risk Distribution Donut -->
+        <div class="card">
+          <div class="flex justify-between items-center" style="margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; color: var(--text-main);">Risk Classification Breakdown</h3>
+            <span class="badge badge-cyan">Severity</span>
+          </div>
+          <div style="position: relative; height: 260px; width: 100%; display: flex; align-items: center; justify-content: center;">
+            <canvas id="riskDistributionChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Scans Table Section -->
+      <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="flex justify-between items-center" style="margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--text-main);">Recent Security Scans</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Latest inspected items across URLs and QR codes</p>
+          </div>
+          <a href="/history.html" class="btn btn-secondary btn-sm">
+            View All History &rarr;
+          </a>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Target / Destination</th>
+                <th>Content Type</th>
+                <th>Risk Level</th>
+                <th>Risk Score</th>
+                <th>Date & Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recent-scans-tbody">
+              <!-- Injected via JS -->
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                  <span class="spinner" style="width: 20px; height: 20px;"></span> Loading scans...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Security Recommendations Card -->
+      <div class="card card-elevated" style="background: rgba(17, 26, 46, 0.9);">
+        <div class="flex items-center gap-3" style="margin-bottom: 1rem;">
+          <div style="color: var(--electric-cyan);"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
+          <h3 style="font-size: 1.15rem; color: var(--text-main);">Core Security Recommendations</h3>
+        </div>
+        <div class="grid grid-3 gap-4">
+          <div style="background: #0B1020; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <strong style="color: var(--electric-cyan); font-size: 0.9rem;">Beware Lookalike Domains</strong>
+            <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Phishers substitute letters with numbers (e.g. <code>paypa1.com</code>) or Cyrillic homoglyphs. Always inspect domain spelling closely.
+            </p>
+          </div>
+          <div style="background: #0B1020; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <strong style="color: var(--primary-purple); font-size: 0.9rem;">Never Trust Naked IP Hosts</strong>
+            <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Legitimate customer portals never ask you to authenticate against a raw IP address (e.g. <code>http://192.168.1.1/login</code>).
+            </p>
+          </div>
+          <div style="background: #0B1020; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <strong style="color: var(--risk-low); font-size: 0.9rem;">The HTTPS Padlock Fallback</strong>
+            <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Over 80% of phishing sites now use free SSL/TLS certificates. HTTPS encrypts the connection, but does not guarantee honesty.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scan Details Modal -->
+  <div id="details-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.25rem; color: var(--text-main);">Scan Findings Breakdown</h3>
+        <button class="btn btn-ghost btn-sm" onclick="PhishGuardUI.closeModal('details-modal')">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+
+      <div id="modal-body-content">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    let activityChartInstance = null;
+    let riskChartInstance = null;
+
+    async function loadDashboardData() {
+      try {
+        const [summary, activity] = await Promise.all([
+          PhishGuardApi.dashboard.getSummary(),
+          PhishGuardApi.dashboard.getActivity()
+        ]);
+
+        renderSummaryStats(summary);
+        renderCharts(activity);
+        renderRecentScans(activity.recentScans || []);
+
+        if (summary.isDemo) {
+          document.getElementById('demo-indicator').style.display = 'inline-flex';
+        } else {
+          document.getElementById('demo-indicator').style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+        PhishGuardUI.showToast('Unable to load dashboard metrics: ' + err.message, 'error');
+      } finally {
+        PhishGuardUI.initIcons();
+      }
+    }
+
+    function renderSummaryStats(summary) {
+      document.getElementById('stat-total-scans').textContent = summary.totalScans || 0;
+      document.getElementById('stat-urls-analyzed').textContent = summary.urlScans || 0;
+      document.getElementById('stat-qr-scanned').textContent = summary.qrScans || 0;
+      document.getElementById('stat-threats-detected').textContent = summary.threatsDetected || 0;
+    }
+
+    function renderCharts(activity) {
+      // 1. Activity Line/Bar Chart
+      const actCtx = document.getElementById('activityChart').getContext('2d');
+      const labels = (activity.timeline || []).map(t => t.date);
+      const urlCounts = (activity.timeline || []).map(t => t.urlCount);
+      const qrCounts = (activity.timeline || []).map(t => t.qrCount);
+
+      if (activityChartInstance) activityChartInstance.destroy();
+
+      activityChartInstance = new Chart(actCtx, {
+        type: 'bar',
+        data: {
+          labels: labels.length ? labels : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [
+            {
+              label: 'URLs',
+              data: urlCounts.length ? urlCounts : [4, 7, 3, 8, 12, 6, 9],
+              backgroundColor: 'rgba(34, 211, 238, 0.7)',
+              borderRadius: 4
+            },
+            {
+              label: 'QR Codes',
+              data: qrCounts.length ? qrCounts : [2, 3, 5, 4, 6, 8, 5],
+              backgroundColor: 'rgba(139, 92, 246, 0.7)',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94A3B8' } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94A3B8' } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94A3B8', precision: 0 } }
+          }
+        }
+      });
+
+      // 2. Risk Distribution Donut Chart
+      const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+      const dist = activity.riskDistribution || { low: 18, medium: 7, high: 5 };
+
+      if (riskChartInstance) riskChartInstance.destroy();
+
+      riskChartInstance = new Chart(riskCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+          datasets: [{
+            data: [dist.low || 0, dist.medium || 0, dist.high || 0],
+            backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+            borderColor: '#111A2E',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94A3B8' } }
+          },
+          cutout: '68%'
+        }
+      });
+    }
+
+    function renderRecentScans(scans) {
+      const tbody = document.getElementById('recent-scans-tbody');
+      if (!scans || scans.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+              <i data-lucide="shield-check" style="width: 32px; height: 32px; margin-bottom: 0.5rem; color: var(--text-dim); display: block; margin: 0 auto;"></i>
+              No scans recorded yet. Try scanning a URL or QR code above!
+            </td>
+          </tr>
+        `;
+        PhishGuardUI.initIcons();
+        return;
+      }
+
+      tbody.innerHTML = scans.map(s => {
+        const typeBadge = s.scanType === 'QR' 
+          ? `<span class="badge badge-purple"><i data-lucide="qr-code" style="width: 12px; height: 12px;"></i> QR</span>` 
+          : `<span class="badge badge-cyan"><i data-lucide="globe" style="width: 12px; height: 12px;"></i> URL</span>`;
+
+        let target = PhishGuardUI.sanitize(s.destinationHostname || s.submittedContent || 'N/A');
+        if (target.length > 38) target = target.substring(0, 38) + '...';
+
+        return `
+          <tr>
+            <td>${typeBadge}</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-main); font-weight: 600;">${target}</td>
+            <td><span style="font-size: 0.8rem; color: var(--text-muted);">${PhishGuardUI.sanitize(s.detectedContentType || 'URL')}</span></td>
+            <td>${PhishGuardUI.renderRiskBadge(s.riskLevel)}</td>
+            <td style="font-weight: 700; color: ${s.riskScore > 60 ? '#EF4444' : s.riskScore > 25 ? '#F59E0B' : '#10B981'};">${s.riskScore}/100</td>
+            <td style="font-size: 0.8rem; color: var(--text-dim);">${PhishGuardUI.formatDate(s.scannedAt)}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="showScanDetails(${s.id})">
+                <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Details
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      PhishGuardUI.initIcons();
+    }
+
+    async function showScanDetails(id) {
+      const modalBody = document.getElementById('modal-body-content');
+      modalBody.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="spinner"></span></div>`;
+      PhishGuardUI.openModal('details-modal');
+
+      try {
+        const scan = await PhishGuardApi.scans.getById(id);
+        const findings = scan.findings || [];
+
+        modalBody.innerHTML = `
+          <div style="margin-bottom: 1.25rem;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              ${PhishGuardUI.renderRiskBadge(scan.riskLevel)}
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Score: <strong>${scan.riskScore}/100</strong></span>
+            </div>
+            <div style="font-family: monospace; font-size: 0.9rem; color: var(--electric-cyan); word-break: break-all; background: #0B1020; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              ${PhishGuardUI.sanitize(scan.submittedContent)}
+            </div>
+          </div>
+
+          <h4 style="font-size: 1rem; margin-bottom: 0.75rem;">Detected Indicators (${findings.length})</h4>
+          <div style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+            ${findings.length === 0 ? '<div style="color: var(--risk-low); font-size: 0.85rem;">No suspicious indicators detected.</div>' : findings.map(f => `
+              <div style="background: var(--bg-surface-elevated); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid ${f.severity === 'HIGH' || f.severity === 'CRITICAL' ? '#EF4444' : '#F59E0B'};">
+                <div class="flex justify-between items-center" style="margin-bottom: 0.25rem;">
+                  <strong style="font-size: 0.875rem; color: var(--text-main);">${PhishGuardUI.sanitize(f.title)}</strong>
+                  <span class="badge ${f.severity === 'HIGH' || f.severity === 'CRITICAL' ? 'badge-high' : 'badge-med'}">${f.severity}</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">${PhishGuardUI.sanitize(f.description)}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+            <span style="font-size: 0.75rem; color: var(--text-dim);">${PhishGuardUI.formatDate(scan.scannedAt)}</span>
+            <button class="btn btn-secondary btn-sm" onclick="PhishGuardUI.copyToClipboard('${scan.submittedContent}')">
+              <i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy URL
+            </button>
+          </div>
+        `;
+        PhishGuardUI.initIcons();
+      } catch (err) {
+        modalBody.innerHTML = `<div style="color: var(--risk-high); padding: 1rem;">Failed to load scan details: ${err.message}</div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboardData();
+    });
+  </script>
+</body>
+</html>

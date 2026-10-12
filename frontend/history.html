@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan History — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/history.html" class="active">History</a></li>
+          <li><a href="/awareness.html">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <a href="/dashboard.html" class="sidebar-link">
+          <i data-lucide="layout-dashboard" style="width: 18px; height: 18px;"></i>
+          <span>Overview</span>
+        </a>
+        <a href="/url-scanner.html" class="sidebar-link">
+          <i data-lucide="globe" style="width: 18px; height: 18px;"></i>
+          <span>URL Scanner</span>
+        </a>
+        <a href="/qr-scanner.html" class="sidebar-link">
+          <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i>
+          <span>QR Scanner</span>
+        </a>
+        <a href="/history.html" class="sidebar-link active">
+          <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+          <span>Scan History</span>
+        </a>
+        <a href="/insights.html" class="sidebar-link">
+          <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i>
+          <span>Security Insights</span>
+        </a>
+        <a href="/awareness.html" class="sidebar-link">
+          <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+          <span>Awareness Center</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="section-header">
+        <h1 class="section-title">Personal Scan History</h1>
+        <p class="section-subtitle">Search, filter, and inspect previously analyzed URLs and decoded QR payloads.</p>
+      </div>
+
+      <!-- Filter and Search Toolbar -->
+      <div class="card" style="margin-bottom: 2rem; padding: 1.25rem;">
+        <div class="flex items-center justify-between gap-4" style="flex-wrap: wrap;">
+          <!-- Search input -->
+          <div style="flex: 1; min-width: 250px; position: relative;">
+            <input 
+              type="text" 
+              id="search-input" 
+              class="form-input" 
+              placeholder="Search by hostname, URL keyword..." 
+              oninput="debounceSearch()"
+            >
+          </div>
+
+          <!-- Type Filter -->
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">TYPE:</span>
+            <select id="type-filter" class="form-select" style="width: auto; padding: 0.5rem 0.75rem;" onchange="loadHistory(0)">
+              <option value="">All Types</option>
+              <option value="URL">URL Only</option>
+              <option value="QR">QR Only</option>
+            </select>
+          </div>
+
+          <!-- Risk Level Filter -->
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">RISK:</span>
+            <select id="risk-filter" class="form-select" style="width: auto; padding: 0.5rem 0.75rem;" onchange="loadHistory(0)">
+              <option value="">All Levels</option>
+              <option value="LOW">Low Risk</option>
+              <option value="MEDIUM">Medium Risk</option>
+              <option value="HIGH">High Risk</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Table Card -->
+      <div class="card">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Target Host / Link</th>
+                <th>Payload</th>
+                <th>Risk Level</th>
+                <th>Score</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 2rem;">
+                  <span class="spinner"></span> Loading history records...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-between items-center" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; gap: 1rem;">
+          <div id="page-summary" style="font-size: 0.85rem; color: var(--text-muted);">
+            Showing page 1
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-prev-page" class="btn btn-ghost btn-sm" onclick="changePage(-1)" disabled>
+              <i data-lucide="chevron-left" style="width: 14px; height: 14px;"></i> Previous
+            </button>
+            <button id="btn-next-page" class="btn btn-ghost btn-sm" onclick="changePage(1)" disabled>
+              Next <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="history-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.2rem; color: var(--text-main);">Inspected Threat Details</h3>
+        <button class="btn btn-ghost btn-sm" onclick="PhishGuardUI.closeModal('history-modal')">
+          <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+      <div id="history-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    let currentPage = 0;
+    const pageSize = 10;
+    let totalPages = 1;
+    let searchTimeout = null;
+
+    function debounceSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        loadHistory(0);
+      }, 350);
+    }
+
+    async function loadHistory(page = 0) {
+      currentPage = page;
+      const type = document.getElementById('type-filter').value;
+      const risk = document.getElementById('risk-filter').value;
+      const search = document.getElementById('search-input').value.trim();
+      const tbody = document.getElementById('history-tbody');
+
+      try {
+        const res = await PhishGuardApi.scans.list(currentPage, pageSize, type, risk, search);
+        totalPages = res.totalPages || 1;
+        renderTable(res.content || []);
+        updatePagination(res);
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2rem; color: var(--risk-high);">
+              Failed to load history: ${err.message}
+            </td>
+          </tr>
+        `;
+      } finally {
+        PhishGuardUI.initIcons();
+      }
+    }
+
+    function renderTable(scans) {
+      const tbody = document.getElementById('history-tbody');
+      if (!scans || scans.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+              <i data-lucide="search-x" style="width: 36px; height: 36px; display: block; margin: 0 auto 0.75rem auto; color: var(--text-dim);"></i>
+              No scan records found matching the current criteria.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = scans.map(s => {
+        const typeBadge = s.scanType === 'QR' 
+          ? `<span class="badge badge-purple"><i data-lucide="qr-code" style="width: 12px; height: 12px;"></i> QR</span>` 
+          : `<span class="badge badge-cyan"><i data-lucide="globe" style="width: 12px; height: 12px;"></i> URL</span>`;
+
+        let target = PhishGuardUI.sanitize(s.destinationHostname || s.submittedContent || 'N/A');
+        if (target.length > 40) target = target.substring(0, 40) + '...';
+
+        return `
+          <tr>
+            <td>${typeBadge}</td>
+            <td style="font-family: monospace; font-size: 0.85rem; color: var(--text-main); font-weight: 600;">${target}</td>
+            <td><span style="font-size: 0.8rem; color: var(--text-muted);">${PhishGuardUI.sanitize(s.detectedContentType || 'URL')}</span></td>
+            <td>${PhishGuardUI.renderRiskBadge(s.riskLevel)}</td>
+            <td style="font-weight: 700; color: ${s.riskScore > 60 ? '#EF4444' : s.riskScore > 25 ? '#F59E0B' : '#10B981'};">${s.riskScore}/100</td>
+            <td style="font-size: 0.8rem; color: var(--text-dim);">${PhishGuardUI.formatDate(s.scannedAt)}</td>
+            <td>
+              <div class="flex gap-2">
+                <button class="btn btn-ghost btn-sm" onclick="viewDetails(${s.id})" title="View Details">
+                  <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteScan(${s.id})" title="Delete Record">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updatePagination(res) {
+      document.getElementById('page-summary').textContent = `Page ${(res.number || 0) + 1} of ${res.totalPages || 1} (${res.totalElements || 0} total records)`;
+      document.getElementById('btn-prev-page').disabled = (res.first || currentPage === 0);
+      document.getElementById('btn-next-page').disabled = (res.last || currentPage >= (res.totalPages - 1));
+    }
+
+    function changePage(delta) {
+      const nextPage = currentPage + delta;
+      if (nextPage >= 0 && nextPage < totalPages) {
+        loadHistory(nextPage);
+      }
+    }
+
+    async function viewDetails(id) {
+      const modalBody = document.getElementById('history-modal-body');
+      modalBody.innerHTML = `<div style="text-align: center; padding: 2rem;"><span class="spinner"></span></div>`;
+      PhishGuardUI.openModal('history-modal');
+
+      try {
+        const scan = await PhishGuardApi.scans.getById(id);
+        const findings = scan.findings || [];
+
+        modalBody.innerHTML = `
+          <div style="margin-bottom: 1.25rem;">
+            <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+              ${PhishGuardUI.renderRiskBadge(scan.riskLevel)}
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Score: <strong>${scan.riskScore}/100</strong></span>
+            </div>
+            <div style="font-family: monospace; font-size: 0.9rem; color: var(--electric-cyan); word-break: break-all; background: #0B1020; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              ${PhishGuardUI.sanitize(scan.submittedContent)}
+            </div>
+          </div>
+
+          <h4 style="font-size: 1rem; margin-bottom: 0.75rem;">Heuristic Findings (${findings.length})</h4>
+          <div style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+            ${findings.length === 0 ? '<div style="color: var(--risk-low); font-size: 0.85rem;">No suspicious indicators recorded for this entry.</div>' : findings.map(f => `
+              <div style="background: var(--bg-surface-elevated); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid ${f.severity === 'HIGH' || f.severity === 'CRITICAL' ? '#EF4444' : '#F59E0B'};">
+                <div class="flex justify-between items-center" style="margin-bottom: 0.25rem;">
+                  <strong style="font-size: 0.875rem; color: var(--text-main);">${PhishGuardUI.sanitize(f.title)}</strong>
+                  <span class="badge ${f.severity === 'HIGH' || f.severity === 'CRITICAL' ? 'badge-high' : 'badge-med'}">${f.severity}</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">${PhishGuardUI.sanitize(f.description)}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
+            <span style="font-size: 0.75rem; color: var(--text-dim);">${PhishGuardUI.formatDate(scan.scannedAt)}</span>
+            <button class="btn btn-secondary btn-sm" onclick="PhishGuardUI.copyToClipboard('${scan.submittedContent}')">
+              <i data-lucide="copy" style="width: 14px; height: 14px;"></i> Copy URL
+            </button>
+          </div>
+        `;
+        PhishGuardUI.initIcons();
+      } catch (err) {
+        modalBody.innerHTML = `<div style="color: var(--risk-high); padding: 1rem;">Error: ${err.message}</div>`;
+      }
+    }
+
+    async function deleteScan(id) {
+      if (!confirm('Are you sure you want to delete this scan record from history?')) return;
+      try {
+        await PhishGuardApi.scans.delete(id);
+        PhishGuardUI.showToast('Scan record deleted', 'info');
+        loadHistory(currentPage);
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Failed to delete record', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHistory(0);
+    });
+  </script>
+</body>
+</html>

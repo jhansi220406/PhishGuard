@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body style="justify-content: center; align-items: center; padding: 2rem 1rem;">
+  <div class="bg-mesh"></div>
+
+  <div style="width: 100%; max-width: 440px;">
+    <!-- Logo Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <a href="/" class="brand-logo" style="justify-content: center; font-size: 1.75rem; margin-bottom: 0.5rem;">
+        <i data-lucide="shield" style="width: 32px; height: 32px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Sign in to your security analyst console</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="card card-elevated" style="padding: 2.25rem;">
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input 
+            type="email" 
+            id="login-email" 
+            class="form-input" 
+            placeholder="analyst@phishguard.security" 
+            required
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <div class="flex justify-between items-center">
+            <label class="form-label" for="login-password">Password</label>
+          </div>
+          <input 
+            type="password" 
+            id="login-password" 
+            class="form-input" 
+            placeholder="••••••••••••" 
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
+          <label class="flex items-center gap-2" style="cursor: pointer; font-size: 0.85rem; color: var(--text-muted);">
+            <input type="checkbox" id="remember-me" checked style="accent-color: var(--primary-purple);">
+            Remember this session
+          </label>
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-primary w-full" style="padding: 0.8rem;">
+          <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+          Sign In
+        </button>
+      </form>
+
+      <!-- Evaluator One-Click Fill -->
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); text-align: center;">
+        <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 0.5rem;">
+          EVALUATOR QUICK ACCESS
+        </span>
+        <button type="button" class="btn btn-ghost btn-sm w-full" onclick="fillDemoCredentials()">
+          <i data-lucide="key" style="width: 14px; height: 14px;"></i>
+          Use Demo Analyst Account
+        </button>
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+        Don't have an account? 
+        <a href="/register.html" style="color: var(--electric-cyan); font-weight: 600;">Create one</a>
+      </div>
+    </div>
+
+    <!-- Back to Home -->
+    <div style="text-align: center; margin-top: 1.5rem;">
+      <a href="/" style="font-size: 0.85rem; color: var(--text-dim); display: inline-flex; align-items: center; gap: 0.35rem;">
+        <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> Back to PhishGuard Home
+      </a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    function fillDemoCredentials() {
+      document.getElementById('login-email').value = 'analyst@phishguard.security';
+      document.getElementById('login-password').value = 'PhishGuard@2026';
+      PhishGuardUI.showToast('Demo analyst credentials loaded', 'info');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value;
+      const remember = document.getElementById('remember-me').checked;
+      const btn = document.getElementById('login-submit-btn');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner" style="width: 16px; height: 16px;"></span> Authenticating...`;
+
+      try {
+        await PhishGuardApi.auth.login(email, pass, remember);
+        PhishGuardUI.showToast('Authentication successful!', 'success');
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 600);
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Login failed. Invalid email or password.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="log-in" style="width: 18px; height: 18px;"></i> Sign In`;
+        PhishGuardUI.initIcons();
+      }
+    }
+  </script>
+</body>
+</html>

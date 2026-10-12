@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Threat Scanner — PhishGuard</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- html5-qrcode & Lucide -->
+  <script src="/js/html5-qrcode.min.js"></script>
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html" class="active">QR Scanner</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/history.html">History</a></li>
+          <li><a href="/awareness.html">Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-toggle"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+    <!-- Section Header -->
+    <div class="section-header">
+      <span class="badge badge-cyan" style="margin-bottom: 0.5rem;">Anti-Quishing Defense</span>
+      <h1 class="section-title">QR Code Threat Scanner</h1>
+      <p class="section-subtitle">Safely decode and analyze physical or digital QR codes without risk of drive-by redirection or uninspected execution.</p>
+    </div>
+
+    <!-- Security Warning Banner -->
+    <div style="background: rgba(139, 92, 246, 0.08); border-left: 4px solid var(--primary-purple); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;">
+      <i data-lucide="shield-alert" style="color: var(--primary-purple); width: 22px; height: 22px; flex-shrink: 0;"></i>
+      <p style="font-size: 0.875rem; color: var(--text-main); margin: 0;">
+        <strong>Zero-Execution Architecture:</strong> PhishGuard never automatically opens or redirects to decoded QR destinations. Content is neutralized, typed, and scrutinized first.
+      </p>
+    </div>
+
+    <!-- Main Scanner Box -->
+    <div class="card card-elevated" style="margin-bottom: 2.5rem;">
+      <!-- Tab Navigation -->
+      <div class="tabs-nav">
+        <button id="tab-btn-camera" class="tab-btn active" onclick="switchTab('camera')">
+          <i data-lucide="camera" style="width: 16px; height: 16px; vertical-align: middle;"></i>
+          Scan Using Camera
+        </button>
+        <button id="tab-btn-upload" class="tab-btn" onclick="switchTab('upload')">
+          <i data-lucide="upload" style="width: 16px; height: 16px; vertical-align: middle;"></i>
+          Upload QR Image
+        </button>
+      </div>
+
+      <!-- TAB A: Camera Scanner -->
+      <div id="tab-content-camera" class="tab-content active">
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+          <!-- Camera Preview Viewport -->
+          <div class="qr-viewport-wrapper" id="camera-viewport-container">
+            <div id="qr-reader"></div>
+            <!-- Reticle Frame Overlay -->
+            <div id="camera-reticle" class="camera-reticle" style="display: none;"></div>
+            
+            <div id="camera-idle-state" style="padding: 2rem; text-align: center;">
+              <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(34, 211, 238, 0.1); color: var(--electric-cyan); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                <i data-lucide="video" style="width: 32px; height: 32px;"></i>
+              </div>
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Camera is Currently Inactive</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; max-width: 340px; margin-left: auto; margin-right: auto;">
+                Click Start Scanner to grant camera permission and align the QR code inside the target frame.
+              </p>
+              <button class="btn btn-primary" onclick="startCameraScanner()">
+                <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+                Start Scanner
+              </button>
+            </div>
+          </div>
+
+          <!-- Camera Controls -->
+          <div id="camera-active-controls" style="display: none; margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem;">
+            <button class="btn btn-danger" onclick="stopCameraScanner()">
+              <i data-lucide="square" style="width: 16px; height: 16px;"></i>
+              Stop Scanner
+            </button>
+          </div>
+
+          <!-- Camera Feedback Alert -->
+          <div id="camera-error-msg" style="display: none; margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--risk-high-border); border-radius: var(--radius-md); color: var(--risk-high); font-size: 0.85rem;">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB B: Upload QR Image -->
+      <div id="tab-content-upload" class="tab-content">
+        <div style="max-width: 600px; margin: 0 auto;">
+          <!-- Dropzone -->
+          <div 
+            class="dropzone" 
+            id="qr-dropzone" 
+            onclick="triggerFileInput()"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleFileDrop(event)"
+          >
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(139, 92, 246, 0.1); color: var(--primary-purple); display: flex; align-items: center; justify-content: center;">
+              <i data-lucide="image-plus" style="width: 30px; height: 30px;"></i>
+            </div>
+            <h3 style="font-size: 1.15rem;">Drop QR Code Image Here</h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">
+              Supports PNG, JPG, JPEG, WEBP files up to 10MB
+            </p>
+            <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">
+              <i data-lucide="folder" style="width: 14px; height: 14px;"></i>
+              Browse Image
+            </button>
+            <input type="file" id="qr-file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+          </div>
+
+          <!-- Upload Preview & Processing Status -->
+          <div id="upload-preview-container" style="display: none; margin-top: 1.5rem; text-align: center;">
+            <div style="display: inline-block; position: relative; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-subtle); max-width: 200px;">
+              <img id="upload-preview-img" src="" alt="Uploaded QR" style="max-width: 100%; height: auto; display: block;">
+            </div>
+            <div id="upload-status" style="margin-top: 1rem; font-size: 0.9rem; color: var(--electric-cyan);">
+              <span class="spinner" style="width: 16px; height: 16px; vertical-align: middle;"></span> Decoding QR Code payload...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decoded QR Inspection Card -->
+    <div id="qr-result-section" style="display: none;">
+      <div class="card card-elevated" style="margin-bottom: 2rem;">
+        <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div class="flex items-center gap-3">
+            <span id="qr-payload-type-badge" class="badge badge-purple">PAYLOAD TYPE</span>
+            <span id="qr-risk-badge"></span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button class="btn btn-secondary btn-sm" onclick="copyDecodedPayload()">
+              <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+              Copy Content
+            </button>
+            <div id="qr-auth-save-badge"></div>
+          </div>
+        </div>
+
+        <!-- Raw Decoded Text Box -->
+        <div style="background: #090E1B; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.75rem;">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">RAW DECODED PAYLOAD</span>
+            <span id="qr-content-length" style="font-size: 0.75rem; color: var(--text-dim);"></span>
+          </div>
+          <div id="qr-decoded-text" style="font-family: monospace; font-size: 0.95rem; color: var(--electric-cyan); word-break: break-all; max-height: 140px; overflow-y: auto;">
+          </div>
+        </div>
+
+        <!-- URL Analysis Card (If payload is a URL) -->
+        <div id="qr-url-analysis-container" style="display: none;">
+          <div class="grid grid-3 gap-4" style="margin-bottom: 1.75rem;">
+            <!-- Score Gauge -->
+            <div class="card" style="display: flex; align-items: center; justify-content: center; padding: 1.25rem; background: #0E1527;">
+              <div id="qr-score-circle" class="score-circle">
+                <span id="qr-score-num" class="score-val">0</span>
+                <span class="score-label">RISK SCORE</span>
+              </div>
+            </div>
+
+            <!-- Destination Host -->
+            <div class="card" style="padding: 1.25rem; background: #0E1527;">
+              <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">DESTINATION HOSTNAME</span>
+              <div id="qr-dest-host" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; color: var(--text-main); font-family: monospace; word-break: break-all;"></div>
+              <p id="qr-dest-tld" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;"></p>
+            </div>
+
+            <!-- Reputation Status -->
+            <div class="card" style="padding: 1.25rem; background: #0E1527;">
+              <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">THREAT REGISTRY</span>
+              <div id="qr-threat-status" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; color: var(--electric-cyan);"></div>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Reputation service check</p>
+            </div>
+          </div>
+
+          <!-- Detected Indicators -->
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              <i data-lucide="alert-triangle" style="color: var(--primary-purple); width: 18px; height: 18px;"></i>
+              QR Destination Threat Indicators (<span id="qr-findings-count">0</span>)
+            </h4>
+            <div id="qr-findings-list"></div>
+          </div>
+
+          <!-- Remediation -->
+          <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: var(--radius-lg); padding: 1.25rem;">
+            <h4 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-main);">
+              <i data-lucide="shield-alert" style="color: var(--primary-purple); width: 18px; height: 18px; vertical-align: middle;"></i>
+              Quishing Prevention Advice
+            </h4>
+            <ul id="qr-recommendations-list" style="list-style-type: disc; margin-left: 1.5rem; font-size: 0.875rem; color: var(--text-muted);">
+            </ul>
+          </div>
+        </div>
+
+        <!-- Non-URL Payload Notice (If plain text, email, WiFi, etc.) -->
+        <div id="qr-non-url-container" style="display: none; background: rgba(34, 211, 238, 0.06); border: 1px solid rgba(34, 211, 238, 0.2); border-radius: var(--radius-md); padding: 1.5rem;">
+          <h4 style="font-size: 1.05rem; color: var(--electric-cyan); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="info" style="width: 20px; height: 20px;"></i>
+            Non-Web Payload Identified
+          </h4>
+          <p id="qr-non-url-desc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            This QR code does not contain a website URL. It contains a non-web payload format.
+          </p>
+          <div style="font-size: 0.825rem; color: var(--text-dim);">
+            <strong>Notice:</strong> Because this is not a website link, web phishing rules do not directly apply. Always exercise caution before copying scripts or executing untrusted text commands.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    let html5QrCode = null;
+    let isCameraRunning = false;
+    let decodedData = null;
+
+    // Tab switcher
+    function switchTab(tab) {
+      if (tab === 'upload' && isCameraRunning) {
+        stopCameraScanner();
+      }
+      document.getElementById('tab-btn-camera').classList.toggle('active', tab === 'camera');
+      document.getElementById('tab-btn-upload').classList.toggle('active', tab === 'upload');
+      document.getElementById('tab-content-camera').classList.toggle('active', tab === 'camera');
+      document.getElementById('tab-content-upload').classList.toggle('active', tab === 'upload');
+      PhishGuardUI.initIcons();
+    }
+
+    // Camera Scanner logic
+    async function startCameraScanner() {
+      const idleState = document.getElementById('camera-idle-state');
+      const activeControls = document.getElementById('camera-active-controls');
+      const reticle = document.getElementById('camera-reticle');
+      const errorDiv = document.getElementById('camera-error-msg');
+      errorDiv.style.display = 'none';
+
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader");
+      }
+
+      try {
+        idleState.style.display = 'none';
+        activeControls.style.display = 'flex';
+        reticle.style.display = 'block';
+
+        const config = {
+          fps: 15,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1.0
+        };
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText, decodedResult) => {
+            // Success QR Scan
+            onQrCodeDecoded(decodedText);
+            stopCameraScanner();
+          },
+          (errorMessage) => {
+            // Continuous scanning frame error, ignore
+          }
+        );
+
+        isCameraRunning = true;
+        PhishGuardUI.showToast('Camera scanner started. Align QR in frame.', 'info');
+      } catch (err) {
+        console.error('Camera startup error:', err);
+        stopCameraScanner();
+        errorDiv.textContent = `Camera Access Failed: ${err.message || 'Permission denied or no webcam available.'}`;
+        errorDiv.style.display = 'block';
+        PhishGuardUI.showToast('Camera permission denied or camera unavailable', 'error');
+      }
+      PhishGuardUI.initIcons();
+    }
+
+    async function stopCameraScanner() {
+      const idleState = document.getElementById('camera-idle-state');
+      const activeControls = document.getElementById('camera-active-controls');
+      const reticle = document.getElementById('camera-reticle');
+
+      if (html5QrCode && isCameraRunning) {
+        try {
+          await html5QrCode.stop();
+        } catch (e) {
+          console.warn('Error stopping camera:', e);
+        }
+      }
+      isCameraRunning = false;
+      idleState.style.display = 'block';
+      activeControls.style.display = 'none';
+      reticle.style.display = 'none';
+      PhishGuardUI.initIcons();
+    }
+
+    // Upload & Drag-and-drop
+    function triggerFileInput() {
+      document.getElementById('qr-file-input').click();
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('qr-dropzone').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('qr-dropzone').classList.remove('dragover');
+    }
+
+    function handleFileDrop(e) {
+      e.preventDefault();
+      document.getElementById('qr-dropzone').classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processUploadedFile(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        processUploadedFile(e.target.files[0]);
+      }
+    }
+
+    async function processUploadedFile(file) {
+      if (!file.type.startsWith('image/')) {
+        PhishGuardUI.showToast('Please upload an image file (PNG, JPG, etc.)', 'error');
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        PhishGuardUI.showToast('File size exceeds 10MB limit', 'error');
+        return;
+      }
+
+      const previewContainer = document.getElementById('upload-preview-container');
+      const previewImg = document.getElementById('upload-preview-img');
+      const statusDiv = document.getElementById('upload-status');
+
+      previewImg.src = URL.createObjectURL(file);
+      previewContainer.style.display = 'block';
+      statusDiv.innerHTML = `<span class="spinner" style="width: 16px; height: 16px; vertical-align: middle;"></span> Processing image...`;
+
+      try {
+        if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("qr-reader");
+        }
+
+        const decodedText = await html5QrCode.scanFile(file, true);
+        statusDiv.innerHTML = `<span style="color: var(--risk-low);"><i data-lucide="check" style="width: 16px; height: 16px;"></i> QR Code Decoded Successfully!</span>`;
+        onQrCodeDecoded(decodedText);
+      } catch (err) {
+        statusDiv.innerHTML = `<span style="color: var(--risk-high);"><i data-lucide="x" style="width: 16px; height: 16px;"></i> No readable QR code detected in this image.</span>`;
+        PhishGuardUI.showToast('No readable QR code found in image', 'error');
+      }
+      PhishGuardUI.initIcons();
+    }
+
+    // Process Decoded QR Content
+    async function onQrCodeDecoded(rawContent) {
+      decodedData = rawContent;
+      const resultSection = document.getElementById('qr-result-section');
+      resultSection.style.display = 'block';
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Sanitized raw display
+      document.getElementById('qr-decoded-text').textContent = rawContent;
+      document.getElementById('qr-content-length').textContent = `${rawContent.length} chars`;
+
+      // Call backend to analyze payload and determine content type
+      try {
+        const scan = await PhishGuardApi.scans.analyzeQr(rawContent, 'QR');
+        renderQrAnalysisResult(scan, rawContent);
+        PhishGuardUI.showToast('QR Code Analyzed!', 'success');
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Failed to analyze QR payload', 'error');
+      }
+    }
+
+    function renderQrAnalysisResult(scan, rawContent) {
+      // Type badge
+      const typeBadge = document.getElementById('qr-payload-type-badge');
+      typeBadge.textContent = scan.detectedContentType || 'UNKNOWN';
+
+      // Risk badge
+      document.getElementById('qr-risk-badge').innerHTML = PhishGuardUI.renderRiskBadge(scan.riskLevel);
+
+      const urlContainer = document.getElementById('qr-url-analysis-container');
+      const nonUrlContainer = document.getElementById('qr-non-url-container');
+
+      if (scan.detectedContentType === 'URL') {
+        urlContainer.style.display = 'block';
+        nonUrlContainer.style.display = 'none';
+
+        // Score circle
+        const circle = document.getElementById('qr-score-circle');
+        circle.className = 'score-circle';
+        if (scan.riskLevel === 'HIGH') circle.classList.add('score-high');
+        else if (scan.riskLevel === 'MEDIUM') circle.classList.add('score-med');
+        else circle.classList.add('score-low');
+        document.getElementById('qr-score-num').textContent = scan.riskScore;
+
+        // Destination Host & Threat status
+        document.getElementById('qr-dest-host').textContent = scan.destinationHostname || 'N/A';
+        document.getElementById('qr-dest-tld').textContent = `Full Link: ${scan.submittedContent.substring(0, 45)}...`;
+        document.getElementById('qr-threat-status').textContent = scan.threatProviderStatus || 'Reputation unavailable';
+
+        // Findings
+        const findingsList = document.getElementById('qr-findings-list');
+        const findings = scan.findings || [];
+        document.getElementById('qr-findings-count').textContent = findings.length;
+
+        if (findings.length === 0) {
+          findingsList.innerHTML = `
+            <div class="finding-item" style="border-left: 3px solid var(--risk-low);">
+              <i data-lucide="check-circle" style="color: var(--risk-low); width: 20px; height: 20px;"></i>
+              <div style="font-size: 0.875rem; color: var(--text-muted);">No suspicious URL indicators detected for this destination.</div>
+            </div>
+          `;
+        } else {
+          findingsList.innerHTML = findings.map(f => {
+            let color = f.severity === 'CRITICAL' || f.severity === 'HIGH' ? 'var(--risk-high)' : 'var(--risk-med)';
+            return `
+              <div class="finding-item" style="border-left: 3px solid ${color};">
+                <i data-lucide="alert-circle" style="color: ${color}; width: 20px; height: 20px; flex-shrink: 0;"></i>
+                <div>
+                  <div class="flex items-center gap-2" style="margin-bottom: 0.25rem;">
+                    <strong style="color: var(--text-main); font-size: 0.9rem;">${PhishGuardUI.sanitize(f.title)}</strong>
+                    <span class="badge ${f.severity === 'CRITICAL' || f.severity === 'HIGH' ? 'badge-high' : 'badge-med'}">${f.severity}</span>
+                  </div>
+                  <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">${PhishGuardUI.sanitize(f.description)}</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // Recommendations
+        const recList = document.getElementById('qr-recommendations-list');
+        const recs = scan.recommendations || [
+          'Verify the destination hostname against official bookmarks.',
+          'Never submit banking or login passwords following an unexpected physical QR scan.'
+        ];
+        recList.innerHTML = recs.map(r => `<li>${PhishGuardUI.sanitize(r)}</li>`).join('');
+
+      } else {
+        // Non-URL payload (e.g. Plain Text, WiFi, Contact vCard, Email)
+        urlContainer.style.display = 'none';
+        nonUrlContainer.style.display = 'block';
+
+        const desc = document.getElementById('qr-non-url-desc');
+        if (scan.detectedContentType === 'EMAIL') {
+          desc.textContent = `Payload detected as an Email Address or mailto link: "${rawContent}".`;
+        } else if (scan.detectedContentType === 'WIFI') {
+          desc.textContent = `Payload detected as a Wi-Fi Network Configuration string.`;
+        } else if (scan.detectedContentType === 'CONTACT') {
+          desc.textContent = `Payload detected as a Contact Card (vCard / MECARD format).`;
+        } else {
+          desc.textContent = `Payload detected as Plain Text / Generic Data (${rawContent.length} characters).`;
+        }
+      }
+
+      // Auth save status
+      const authBadge = document.getElementById('qr-auth-save-badge');
+      if (PhishGuardApi.isAuthenticated()) {
+        authBadge.innerHTML = `<span class="badge badge-low"><i data-lucide="check"></i> Saved to Account History</span>`;
+      } else {
+        authBadge.innerHTML = `<span class="badge badge-unknown" title="Sign in to save scans"><i data-lucide="info"></i> Anonymous Scan</span>`;
+      }
+
+      PhishGuardUI.initIcons();
+    }
+
+    function copyDecodedPayload() {
+      if (decodedData) {
+        PhishGuardUI.copyToClipboard(decodedData, 'Decoded content copied!');
+      }
+    }
+
+    // Cleanup camera when leaving the page
+    window.addEventListener('beforeunload', () => {
+      if (html5QrCode && isCameraRunning) {
+        html5QrCode.stop().catch(() => {});
+      }
+    });
+  </script>
+</body>
+</html>

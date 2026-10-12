@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard — Phishing URL & QR Code Threat Detection</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="/js/lucide.min.js"></script>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="brand-logo">
+        <i data-lucide="shield" style="width: 28px; height: 28px;"></i>
+        <span>Phish<span class="highlight">Guard</span></span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="/" class="active">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="/url-scanner.html">URL Scanner</a></li>
+          <li><a href="/qr-scanner.html">QR Scanner</a></li>
+          <li><a href="/awareness.html">Security Awareness</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-auth" id="nav-auth-container">
+        <!-- Injected dynamically by ui.js -->
+        <a href="/login.html" class="btn btn-ghost btn-sm">Sign In</a>
+        <a href="/register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
+        <i data-lucide="menu" style="width: 24px; height: 24px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main>
+    <section class="hero-section" style="padding: 5rem 0 4rem 0;">
+      <div class="container">
+        <div class="grid grid-2 items-center gap-8">
+          <div>
+            <div class="badge badge-purple" style="margin-bottom: 1.25rem;">
+              <i data-lucide="lock" style="width: 13px; height: 13px;"></i>
+              Scan Smart. Stay Secure.
+            </div>
+            <h1 style="font-size: 3rem; margin-bottom: 1.25rem; line-height: 1.15;">
+              Your First Line of Defense Against <span style="background: linear-gradient(135deg, var(--electric-cyan), var(--primary-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Phishing</span>.
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.15rem; margin-bottom: 2rem; max-width: 540px;">
+              Analyze suspicious links, inspect QR-code destinations, and understand potential threats before you click. Explainable risk scoring built for real-world cyber defense.
+            </p>
+
+            <div class="flex gap-3" style="margin-bottom: 2.5rem; flex-wrap: wrap;">
+              <a href="/url-scanner.html" class="btn btn-primary btn-lg">
+                <i data-lucide="globe" style="width: 20px; height: 20px;"></i>
+                Scan a URL
+              </a>
+              <a href="/qr-scanner.html" class="btn btn-secondary btn-lg">
+                <i data-lucide="qr-code" style="width: 20px; height: 20px;"></i>
+                Check a QR Code
+              </a>
+            </div>
+
+            <!-- Instant Quick URL Scanner Widget on Hero -->
+            <div class="card" style="padding: 1.25rem; background: rgba(17, 26, 46, 0.85); backdrop-filter: blur(8px);">
+              <form id="hero-scan-form" onsubmit="handleHeroScan(event)">
+                <div class="flex gap-2" style="flex-wrap: wrap;">
+                  <input 
+                    type="text" 
+                    id="hero-url-input" 
+                    class="form-input" 
+                    placeholder="Paste a suspicious link to test (e.g., http://192.168.1.1/login.php)..." 
+                    style="flex: 1; min-width: 220px;" 
+                    required
+                  >
+                  <button type="submit" id="hero-scan-btn" class="btn btn-primary">
+                    <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+                    Quick Analyze
+                  </button>
+                </div>
+              </form>
+
+              <!-- Quick Result Container -->
+              <div id="hero-scan-result" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Visual Preview Graphic -->
+          <div style="display: flex; justify-content: center;">
+            <div class="card card-elevated" style="width: 100%; max-width: 480px; padding: 1.75rem; border: 1px solid rgba(139, 92, 246, 0.25); position: relative; box-shadow: var(--shadow-card);">
+              <div class="flex justify-between items-center" style="margin-bottom: 1.25rem;">
+                <div class="flex items-center gap-2">
+                  <div style="width: 10px; height: 10px; border-radius: 50%; background: #EF4444;"></div>
+                  <div style="width: 10px; height: 10px; border-radius: 50%; background: #F59E0B;"></div>
+                  <div style="width: 10px; height: 10px; border-radius: 50%; background: #10B981;"></div>
+                  <span style="font-size: 0.8rem; color: var(--text-dim); margin-left: 0.5rem; font-family: monospace;">SEC-SCANNER-V1</span>
+                </div>
+                <span class="badge badge-high">HIGH RISK</span>
+              </div>
+
+              <div style="background: #0B1020; padding: 1rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.85rem; color: var(--electric-cyan); margin-bottom: 1.25rem; word-break: break-all; border: 1px solid var(--border-subtle);">
+                TARGET: http://paypal.com.verify-user.tk/login?r=token
+              </div>
+
+              <div class="flex items-center gap-4" style="margin-bottom: 1.25rem;">
+                <div class="score-circle score-high" style="width: 90px; height: 90px;">
+                  <span class="score-val" style="font-size: 1.75rem;">88</span>
+                  <span class="score-label">THREAT</span>
+                </div>
+                <div>
+                  <h4 style="font-size: 1.05rem; margin-bottom: 0.25rem; color: #EF4444;">Severe Risk Detected</h4>
+                  <p style="font-size: 0.825rem; color: var(--text-muted);">Multiple malicious phishing indicators triggered by deterministic engine.</p>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #EF4444; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.8rem;">
+                  <strong>Lookalike Domain:</strong> Deceptive brand 'paypal.com' masqueraded on external host.
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #F59E0B; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.8rem;">
+                  <strong>High Risk TLD:</strong> TLD '.tk' heavily correlated with ephemeral phishing campaigns.
+                </div>
+                <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #EF4444; padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.8rem;">
+                  <strong>Insecure Protocol:</strong> Cleartext HTTP transmission without TLS encryption.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section id="features" style="padding: 5rem 0; background: var(--bg-surface);">
+      <div class="container">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 3.5rem auto;">
+          <span class="badge badge-cyan" style="margin-bottom: 0.75rem;">Core Capabilities</span>
+          <h2 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Built for Rigorous Cybersecurity Assessment</h2>
+          <p style="color: var(--text-muted);">
+            Comprehensive detection combining heuristic rule engines, lookalike domain matching, and QR code payload dissection.
+          </p>
+        </div>
+
+        <div class="grid grid-3 gap-6">
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(139, 92, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--primary-purple); margin-bottom: 1.25rem;">
+              <i data-lucide="globe" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Heuristic URL Analyzer</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Inspects hostname structures, IP addresses, @-symbol tricks, length anomalies, suspicious TLDs, and sensitive authentication targets.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(34, 211, 238, 0.15); display: flex; align-items: center; justify-content: center; color: var(--electric-cyan); margin-bottom: 1.25rem;">
+              <i data-lucide="camera" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Live Camera QR Scanner</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Scan physical QR codes safely via mobile or desktop camera with an active cyber-reticle. No automatic URL opening or redirection.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; color: var(--risk-low); margin-bottom: 1.25rem;">
+              <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">QR Image Drag & Drop</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Upload screenshots and flyer photos to decode payloads client-side with full content-type identification before visiting.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; color: var(--risk-med); margin-bottom: 1.25rem;">
+              <i data-lucide="copy" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Lookalike Domain Detection</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Identifies homograph and typosquatting impersonations targeting major institutions, banking portals, and tech services.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(139, 92, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--primary-purple); margin-bottom: 1.25rem;">
+              <i data-lucide="bar-chart-2" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Security Analytics Dashboard</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Track scan history, analyze personal threat exposure patterns, review risk distribution charts, and export scan logs.
+            </p>
+          </div>
+
+          <div class="card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(34, 211, 238, 0.15); display: flex; align-items: center; justify-content: center; color: var(--electric-cyan); margin-bottom: 1.25rem;">
+              <i data-lucide="graduation-cap" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Awareness & Quizzes</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Interactive educational modules and scenario-based cybersecurity quizzes designed to reinforce real-world phishing defenses.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" style="padding: 5rem 0;">
+      <div class="container">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 3.5rem auto;">
+          <span class="badge badge-purple" style="margin-bottom: 0.75rem;">Transparent Process</span>
+          <h2 style="font-size: 2.25rem; margin-bottom: 0.75rem;">Three-Step Inspection Architecture</h2>
+          <p style="color: var(--text-muted);">
+            How PhishGuard assesses links and payloads safely without compromising your endpoint.
+          </p>
+        </div>
+
+        <div class="grid grid-3 gap-6">
+          <div class="card" style="position: relative;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: rgba(139, 92, 246, 0.25); line-height: 1; margin-bottom: 1rem;">01</div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Submit or Scan</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Provide a raw URL string or scan a physical QR code. Payloads are sanitized and parsed without opening the target web page.
+            </p>
+          </div>
+
+          <div class="card" style="position: relative;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: rgba(34, 211, 238, 0.25); line-height: 1; margin-bottom: 1rem;">02</div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Deterministic Analysis</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              The engine tests across 12+ risk dimensions: IP hostname, suspicious TLD, typosquatting, credential traps, redirect keywords, and TLS context.
+            </p>
+          </div>
+
+          <div class="card" style="position: relative;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: rgba(16, 185, 129, 0.25); line-height: 1; margin-bottom: 1rem;">03</div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Explainable Verdict</h3>
+            <p style="color: var(--text-muted); font-size: 0.925rem;">
+              Receive an explainable risk score (0-100), full itemized findings with severity levels, and concrete recommended defense measures.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Limitation Disclaimer Callout Banner -->
+    <section style="padding: 2.5rem 0; background: rgba(17, 26, 46, 0.6); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+      <div class="container">
+        <div class="flex items-center gap-4" style="background: rgba(100, 116, 139, 0.08); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.5rem;">
+          <div style="color: var(--electric-cyan); flex-shrink: 0;">
+            <i data-lucide="info" style="width: 28px; height: 28px;"></i>
+          </div>
+          <div>
+            <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Cybersecurity Assessment Notice & Limitations</h4>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">
+              PhishGuard provides deterministic risk indicators and heuristic security analysis. Findings represent evaluated threat probability and do not constitute an absolute guarantee that any site is safe or malicious. Always exercise caution and never submit sensitive credentials on unfamiliar pages.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid grid-4 gap-6" style="margin-bottom: 2.5rem;">
+        <div>
+          <a href="/" class="brand-logo" style="margin-bottom: 1rem;">
+            <i data-lucide="shield" style="width: 24px; height: 24px;"></i>
+            <span>Phish<span class="highlight">Guard</span></span>
+          </a>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            Enterprise-grade phishing detection, QR threat mitigation, and interactive cybersecurity awareness.
+          </p>
+        </div>
+
+        <div>
+          <h5 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--text-main);">Modules</h5>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+            <li><a href="/url-scanner.html">URL Scanner</a></li>
+            <li><a href="/qr-scanner.html">QR Code Scanner</a></li>
+            <li><a href="/dashboard.html">Security Dashboard</a></li>
+            <li><a href="/history.html">Personal History</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--text-main);">Education</h5>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+            <li><a href="/awareness.html">Awareness Center</a></li>
+            <li><a href="/awareness.html#quiz">Interactive Quizzes</a></li>
+            <li><a href="/insights.html">Threat Trends</a></li>
+            <li><a href="/swagger-ui.html" target="_blank">API Swagger Docs</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--text-main);">Project Info</h5>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            College Full Stack Development (FSD) Project.
+          </p>
+          <div class="badge badge-cyan" style="font-size: 0.75rem;">
+            Java Spring Boot + MySQL + Modern JS
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; text-align: center; font-size: 0.825rem; color: var(--text-dim);">
+        &copy; 2026 PhishGuard Threat Detection Platform. All rights reserved. Built for security education and demonstration.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script>
+    async function handleHeroScan(e) {
+      e.preventDefault();
+      const input = document.getElementById('hero-url-input');
+      const btn = document.getElementById('hero-scan-btn');
+      const resultDiv = document.getElementById('hero-scan-result');
+      const url = input.value.trim();
+
+      if (!url) return;
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner" style="width: 16px; height: 16px;"></span> Scanning...`;
+
+      try {
+        const res = await PhishGuardApi.scans.analyzeUrl(url);
+        resultDiv.style.display = 'block';
+
+        let badgeClass = 'badge-low';
+        let levelColor = '#10B981';
+        if (res.riskLevel === 'HIGH') {
+          badgeClass = 'badge-high';
+          levelColor = '#EF4444';
+        } else if (res.riskLevel === 'MEDIUM') {
+          badgeClass = 'badge-med';
+          levelColor = '#F59E0B';
+        }
+
+        resultDiv.innerHTML = `
+          <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <div class="flex items-center gap-2">
+              <span class="badge ${badgeClass}">${res.riskLevel} RISK</span>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Risk Score: <strong style="color: ${levelColor}">${res.riskScore}/100</strong></span>
+            </div>
+            <a href="/url-scanner.html?url=${encodeURIComponent(url)}" class="btn btn-secondary btn-sm">Full Report &rarr;</a>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem; word-break: break-all;">
+            <strong>Target:</strong> ${PhishGuardUI.sanitize(res.destinationHostname || res.submittedContent)}
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">
+            Detected ${res.findings ? res.findings.length : 0} risk indicator(s).
+          </div>
+        `;
+        PhishGuardUI.initIcons();
+        PhishGuardUI.showToast(`Analyzed: ${res.riskLevel} Risk (${res.riskScore}/100)`, res.riskLevel === 'HIGH' ? 'error' : 'success');
+      } catch (err) {
+        PhishGuardUI.showToast(err.message || 'Scan failed', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="shield-check" style="width: 18px; height: 18px;"></i> Quick Analyze`;
+        PhishGuardUI.initIcons();
+      }
+    }
+  </script>
+</body>
+</html>
